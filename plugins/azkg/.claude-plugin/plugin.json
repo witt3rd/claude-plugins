@@ -23,6 +23,5 @@
     "./commands/rename-note.md",
     "./commands/search-notes.md",
     "./commands/update-note.md"
-  ],
-  "agents": "./agents/"
+  ]
 }
