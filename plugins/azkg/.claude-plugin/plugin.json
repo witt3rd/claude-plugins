@@ -3,27 +3,26 @@
   "version": "0.1.0",
   "displayName": "Agentic-ZKG",
   "description": "Agent-maintained Zettelkasten knowledge graph",
-  "author": "Donald Thompson",
+  "author": {
+    "name": "Donald Thompson",
+    "email": "dthompson@witt3rd.com"
+  },
   "license": "MIT",
   "repository": "https://github.com/witt3rd/claude-plugins",
   "commands": [
-    "create-note",
-    "search-notes",
-    "expand-graph",
-    "learning-path",
-    "graph-note",
-    "conform-note",
-    "rename-note",
-    "refresh-topic",
-    "graph-validate",
-    "graph-stats",
-    "graph-moc"
+    "./commands/conform-note.md",
+    "./commands/create-note.md",
+    "./commands/expand-graph.md",
+    "./commands/graph-add-relationship.md",
+    "./commands/graph-moc.md",
+    "./commands/graph-note.md",
+    "./commands/graph-stats.md",
+    "./commands/graph-validate.md",
+    "./commands/learning-path.md",
+    "./commands/refresh-topic.md",
+    "./commands/rename-note.md",
+    "./commands/search-notes.md",
+    "./commands/update-note.md"
   ],
-  "agents": [
-    "research-agent",
-    "relationship-discovery"
-  ],
-  "hooks": [
-    "post-commit"
-  ]
+  "agents": "./agents/"
 }
