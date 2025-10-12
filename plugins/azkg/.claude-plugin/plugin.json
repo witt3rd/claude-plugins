@@ -25,9 +25,5 @@
   ],
   "hooks": [
     "post-commit"
-  ],
-  "mcp": {
-    "enabled": true,
-    "server": "./mcp-server/server.py"
-  }
+  ]
 }
