@@ -1,29 +1,23 @@
 {
-  "version": "1.0.0",
   "name": "witt3rd-claude-plugins",
-  "description": "Professional-grade Claude Code plugins for knowledge management and development workflows",
   "owner": {
     "name": "Donald Thompson",
-    "url": "https://github.com/witt3rd"
+    "email": "dthompson@witt3rd.com"
   },
-  "repository": "https://github.com/witt3rd/claude-plugins",
   "plugins": [
     {
       "name": "azkg",
-      "displayName": "Agentic Zettelkasten Knowledge Graph",
-      "description": "Agent-maintained knowledge management with MCP server, specialized agents, and workflow hooks",
+      "source": "./plugins/azkg",
+      "description": "Agent-maintained Zettelkasten knowledge graph with MCP server, specialized agents, and workflow hooks",
       "version": "0.1.0",
-      "source": {
-        "type": "git",
-        "url": "https://github.com/witt3rd/claude-plugins",
-        "path": "plugins/azkg"
-      },
       "author": {
         "name": "Donald Thompson",
-        "url": "https://github.com/witt3rd"
-      },
-      "tags": ["knowledge-management", "zettelkasten", "mcp", "research"],
-      "homepage": "https://github.com/witt3rd/claude-plugins/tree/main/plugins/azkg"
+        "email": "dthompson@witt3rd.com"
+      }
     }
-  ]
+  ],
+  "metadata": {
+    "description": "Professional-grade Claude Code plugins for knowledge management and development workflows",
+    "version": "1.0.0"
+  }
 }
