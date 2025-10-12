@@ -56,3 +56,26 @@ Exposes knowledge graph as MCP resources and tools:
 ## License
 
 MIT
+
+## Command Documentation
+
+For complete command specifications, implementation details, and usage examples, see:
+
+**[COMMANDS.md](./COMMANDS.md)** - Comprehensive command reference with:
+- All 13 command specifications
+- Tier organization (Core, Maintenance, Analysis, Granular)
+- Tool usage (Read, Write, Edit, Grep, Glob, Bash)
+- Rationalization and recommendations
+- Future command proposals
+
+### Quick Reference
+
+Commands are organized by usage frequency:
+
+**Tier 1 - Core (Daily):** create-note, search-notes, expand-graph, learning-path, graph-note, refresh-topic
+
+**Tier 2 - Maintenance (Weekly):** conform-note, rename-note, graph-validate
+
+**Tier 3 - Analysis (Monthly):** graph-stats, graph-moc
+
+**Tier 4 - Granular (Rarely):** graph-add-relationship, update-note
