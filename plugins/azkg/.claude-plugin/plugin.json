@@ -1,0 +1,33 @@
+{
+  "name": "azkg",
+  "version": "0.1.0",
+  "displayName": "Agentic-ZKG",
+  "description": "Agent-maintained Zettelkasten knowledge graph",
+  "author": "Donald Thompson",
+  "license": "MIT",
+  "repository": "https://github.com/witt3rd/claude-plugins",
+  "commands": [
+    "create-note",
+    "search-notes",
+    "expand-graph",
+    "learning-path",
+    "graph-note",
+    "conform-note",
+    "rename-note",
+    "refresh-topic",
+    "graph-validate",
+    "graph-stats",
+    "graph-moc"
+  ],
+  "agents": [
+    "research-agent",
+    "relationship-discovery"
+  ],
+  "hooks": [
+    "post-commit"
+  ],
+  "mcp": {
+    "enabled": true,
+    "server": "./mcp-server/server.py"
+  }
+}
