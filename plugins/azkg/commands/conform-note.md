@@ -1,6 +1,48 @@
+---
+description: Restructure a note to follow standard repository format
+---
+
 # Conform Note
 
 Restructure a note to follow the standard repository format as defined in CLAUDE.md and README.md.
+
+## 0. Locate AZKG Repository
+
+**Check for AZKG_REPO_PATH environment variable:**
+
+- Use bash conditional: `if [ -z "$AZKG_REPO_PATH" ]; then REPO_PATH=$(pwd); else REPO_PATH="$AZKG_REPO_PATH"; fi`
+- **If AZKG_REPO_PATH is set:** Use that path as the repository root
+- **If AZKG_REPO_PATH is not set:** Use current working directory (pwd)
+- Store result as REPO_PATH for all subsequent file operations
+
+**All file operations must use REPO_PATH:**
+
+- Read: `Read(REPO_PATH/filename.md)` or `Read("$REPO_PATH/filename.md")`
+- Write: `Write(REPO_PATH/filename.md)` or `Write("$REPO_PATH/filename.md")`
+- Edit: `Edit(REPO_PATH/filename.md)` or `Edit("$REPO_PATH/filename.md")`
+- Grep: `Grep(pattern, path=REPO_PATH)` or with explicit path
+- Glob: `Glob(pattern, path=REPO_PATH)` or with explicit path
+
+**Example usage:**
+
+```
+# Check environment variable
+if [ -z "$AZKG_REPO_PATH" ]; then
+  REPO_PATH=$(pwd)
+else
+  REPO_PATH="$AZKG_REPO_PATH"
+fi
+
+# Then use REPO_PATH for all operations
+Read("$REPO_PATH/agents.md")
+```
+
+**Concrete examples:**
+
+- If AZKG_REPO_PATH="/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg"
+  → Read("/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg/agents.md")
+- If AZKG_REPO_PATH is not set and pwd is /c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg
+  → Read("agents.md") or use full path from pwd
 
 ## Task
 
@@ -49,26 +91,31 @@ Brief summary paragraph (1-3 sentences describing what this note contains).
 ## Steps
 
 ### 1. Read and Analyze
+
 - Read the specified note file
 - Identify existing sections and their purpose
 - Preserve all valuable content
 
 ### 2. Fix YAML Frontmatter
+
 - Ensure proper YAML format with `tags: [tag1, tag2, tag3]`
 - Preserve `last_refresh` if it exists
 - Ensure tags follow conventions: lowercase with hyphens
 
 ### 3. Restructure Title and Summary
+
 - Ensure single H1 title
 - If the opening paragraph is already a good summary, keep it
 - If opening is too long or mixed with introduction content, extract a 1-3 sentence summary
 
 ### 4. Organize Main Content
+
 - Preserve existing section structure
 - Keep all substantive content in appropriate sections
 - Maintain proper heading hierarchy
 
 ### 5. Fix References Section
+
 - Change "Citations:" to "## References"
 - Remove any "---" separator lines between content and references
 - Remove attribution lines like "Answer from Perplexity: pplx.ai/share"
@@ -76,6 +123,7 @@ Brief summary paragraph (1-3 sentences describing what this note contains).
 - Ensure References section comes AFTER Related Concepts
 
 ### 6. Preserve Related Concepts
+
 - The "## Related Concepts" section contains typed relationships - be careful when editing
 - This section IS the knowledge graph - relationships live directly in markdown files
 - Ensure it appears before References section
@@ -84,11 +132,14 @@ Brief summary paragraph (1-3 sentences describing what this note contains).
 ### 7. Final Structure Check
 
 The final order should be:
+
 1. YAML frontmatter
 2. Title (H1)
 3. Brief summary paragraph
 4. Main content sections (H2)
+
 5. ## Related Concepts (H2) - preserve existing relationships
+
 6. ## References (H2)
 
 ## Execution
@@ -110,6 +161,7 @@ The final order should be:
 ## Example Transformations
 
 **Before:**
+
 ```markdown
 # Some Note
 
@@ -131,6 +183,7 @@ Answer from Perplexity: pplx.ai/share
 ```
 
 **After:**
+
 ```markdown
 ---
 tags: [relevant, tags]

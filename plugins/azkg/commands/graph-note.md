@@ -1,10 +1,53 @@
+---
+description: Display detailed information about a specific note
+---
+
 # Graph Note
 
 Show detailed information about a specific note, including all relationships and backlinks.
 
+## 0. Locate AZKG Repository
+
+**Check for AZKG_REPO_PATH environment variable:**
+
+- Use bash conditional: `if [ -z "$AZKG_REPO_PATH" ]; then REPO_PATH=$(pwd); else REPO_PATH="$AZKG_REPO_PATH"; fi`
+- **If AZKG_REPO_PATH is set:** Use that path as the repository root
+- **If AZKG_REPO_PATH is not set:** Use current working directory (pwd)
+- Store result as REPO_PATH for all subsequent file operations
+
+**All file operations must use REPO_PATH:**
+
+- Read: `Read(REPO_PATH/filename.md)` or `Read("$REPO_PATH/filename.md")`
+- Write: `Write(REPO_PATH/filename.md)` or `Write("$REPO_PATH/filename.md")`
+- Edit: `Edit(REPO_PATH/filename.md)` or `Edit("$REPO_PATH/filename.md")`
+- Grep: `Grep(pattern, path=REPO_PATH)` or with explicit path
+- Glob: `Glob(pattern, path=REPO_PATH)` or with explicit path
+
+**Example usage:**
+
+```
+# Check environment variable
+if [ -z "$AZKG_REPO_PATH" ]; then
+  REPO_PATH=$(pwd)
+else
+  REPO_PATH="$AZKG_REPO_PATH"
+fi
+
+# Then use REPO_PATH for all operations
+Read("$REPO_PATH/agents.md")
+```
+
+**Concrete examples:**
+
+- If AZKG_REPO_PATH="/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg"
+  → Read("/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg/agents.md")
+- If AZKG_REPO_PATH is not set and pwd is /c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg
+  → Read("agents.md") or use full path from pwd
+
 ## Task
 
 Display:
+
 - Note title, tags, and summary (from YAML frontmatter and heading)
 - All relationships from "Related Concepts" section
 - Backlinks (other notes that reference this note)
@@ -22,6 +65,7 @@ Ensure filename has `.md` extension.
 ### 2. Verify Note Exists
 
 Use Glob to check if note exists:
+
 ```bash
 Glob "agents.md"
 ```
@@ -35,6 +79,7 @@ Use Read tool to get full note content.
 ### 4. Extract Metadata
 
 From the note content:
+
 - **Title**: First `# Heading` after YAML frontmatter
 - **Tags**: From `tags:` field in YAML frontmatter
 - **Summary**: First paragraph after title (before `##` sections)
@@ -42,6 +87,7 @@ From the note content:
 ### 5. Parse "Related Concepts" Section
 
 From note content, extract all relationships:
+
 - Prerequisites
 - Related Topics
 - Extends
@@ -54,6 +100,7 @@ For each relationship, capture the target note and "why" explanation.
 ### 6. Find Backlinks
 
 Use Grep to find all notes that reference this note:
+
 ```bash
 # Find all wikilinks to this note
 Grep "\[\[agents\]\]" --glob="*.md" --output_mode="files_with_matches"

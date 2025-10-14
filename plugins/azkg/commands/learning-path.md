@@ -1,14 +1,58 @@
+---
+description: Generate an optimal learning sequence for a target note
+---
+
 # Learning Path
 
 Generate an optimal learning sequence for a target note by tracing prerequisite chains through the knowledge graph.
 
+## 0. Locate AZKG Repository
+
+**Check for AZKG_REPO_PATH environment variable:**
+
+- Use bash conditional: `if [ -z "$AZKG_REPO_PATH" ]; then REPO_PATH=$(pwd); else REPO_PATH="$AZKG_REPO_PATH"; fi`
+- **If AZKG_REPO_PATH is set:** Use that path as the repository root
+- **If AZKG_REPO_PATH is not set:** Use current working directory (pwd)
+- Store result as REPO_PATH for all subsequent file operations
+
+**All file operations must use REPO_PATH:**
+
+- Read: `Read(REPO_PATH/filename.md)` or `Read("$REPO_PATH/filename.md")`
+- Write: `Write(REPO_PATH/filename.md)` or `Write("$REPO_PATH/filename.md")`
+- Edit: `Edit(REPO_PATH/filename.md)` or `Edit("$REPO_PATH/filename.md")`
+- Grep: `Grep(pattern, path=REPO_PATH)` or with explicit path
+- Glob: `Glob(pattern, path=REPO_PATH)` or with explicit path
+
+**Example usage:**
+
+```
+# Check environment variable
+if [ -z "$AZKG_REPO_PATH" ]; then
+  REPO_PATH=$(pwd)
+else
+  REPO_PATH="$AZKG_REPO_PATH"
+fi
+
+# Then use REPO_PATH for all operations
+Read("$REPO_PATH/agents.md")
+```
+
+**Concrete examples:**
+
+- If AZKG_REPO_PATH="/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg"
+  → Read("/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg/agents.md")
+- If AZKG_REPO_PATH is not set and pwd is /c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg
+  → Read("agents.md") or use full path from pwd
+
 ## 1. Parse Input
 
 **Input format:** User provides:
+
 - A note name: `/learning-path mcp_security.md`
 - Or just the topic: `/learning-path mcp_security`
 
 **Normalize input:**
+
 - Add `.md` extension if missing
 - Use Glob to verify the target note exists
 - If not found, suggest similar notes using Glob
@@ -16,11 +60,13 @@ Generate an optimal learning sequence for a target note by tracing prerequisite 
 ## 2. Load Target Note
 
 **Read the target note:**
+
 - Use Read tool to get full content
 - Extract YAML tags and title
 - Parse "Related Concepts" section to get prerequisites
 
 **Example:**
+
 ```markdown
 ## Related Concepts
 
@@ -61,12 +107,14 @@ function buildPrerequisiteTree(note, visited = new Set()):
 ```
 
 **Implementation with tools:**
+
 1. **Read** target note to get prerequisites
 2. For each prerequisite, **Read** that note to get its prerequisites
 3. Recursively traverse until reaching foundation notes (no prerequisites)
 4. Track visited nodes to detect cycles
 
 **Key features:**
+
 - **Cycle detection:** Track visited nodes to prevent infinite loops
 - **Multiple paths:** Handle notes with multiple prerequisites
 - **Foundation detection:** Identify notes with no prerequisites
@@ -81,6 +129,7 @@ function buildPrerequisiteTree(note, visited = new Set()):
 3. **Group by depth level:** Show conceptual layers
 
 **Example structure:**
+
 ```
 Level 0 (Foundations):
 - note_a.md
@@ -100,11 +149,13 @@ Level 3 (Target):
 ## 5. Read Note Summaries
 
 **For each note in the learning path:**
+
 - Use Read tool to get first 3-5 lines (the summary)
 - Extract the brief description after the title
 - This provides context for each step
 
 **Example:**
+
 ```
 ## mcp_overview.md
 "Introduction to Model Context Protocol, a standardized way for AI assistants to connect to data sources and tools."
@@ -115,6 +166,7 @@ Level 3 (Target):
 **Calculate metrics:**
 
 **Path statistics:**
+
 - Total notes in sequence: `N`
 - Depth levels: `M` (foundation to target)
 - Estimated reading time: `N × 10 minutes = X minutes`
@@ -122,11 +174,13 @@ Level 3 (Target):
 - Branching factor: Average prerequisites per note
 
 **Complexity assessment:**
+
 - **Simple path (1-3 notes):** "Quick learning path"
 - **Moderate path (4-7 notes):** "Intermediate learning sequence"
 - **Complex path (8+ notes):** "Comprehensive learning journey"
 
 **Identify critical concepts:**
+
 - Notes that multiple paths converge through
 - "Bottleneck" concepts that are prerequisites for many others
 
@@ -135,21 +189,25 @@ Level 3 (Target):
 **Enrich the path with optional content:**
 
 **Parallel reading (Related Topics):**
+
 - Read "Related Topics" sections from notes in path
 - Notes at same level that provide additional context
 - Not strictly required but enhance understanding
 
 **Deeper dives (Extended By):**
+
 - Read "Extended By" sections from notes in path
 - Advanced topics that build on concepts in the path
 - "After mastering this path, explore..."
 
 **Alternative approaches (Alternatives):**
+
 - Read "Alternatives" sections from notes in path
 - Different ways to achieve similar understanding
 - "For a different perspective, consider..."
 
 **Practical examples (Examples):**
+
 - Read "Examples" sections from notes in path
 - Concrete implementations to solidify understanding
 - "Apply these concepts with..."
@@ -245,6 +303,7 @@ These notes are central to this learning path:
 ## Visual Path
 
 ```
+
 Foundations          Core Concepts        Integration         Target
 ─────────────        ─────────────        ───────────         ──────
 
@@ -252,6 +311,7 @@ note_a ──────────┐
                  ├──> note_c ────────┐
                  │                   │
 note_b ──────────┴──> note_d ────────┴──> note_e ──> target_note
+
 ```
 
 ---
@@ -270,6 +330,7 @@ note_b ──────────┴──> note_d ────────�
 ## 9. Handle Edge Cases
 
 **No prerequisites:**
+
 ```
 Learning Path: [Target Note]
 
@@ -287,6 +348,7 @@ After understanding this note, you can explore:
 ```
 
 **Circular dependencies:**
+
 ```
 ⚠️ Circular Dependency Detected
 
@@ -307,6 +369,7 @@ Use `/graph-validate` to check for more circular dependencies.
 ```
 
 **Very long path (>15 notes):**
+
 ```
 📚 Complex Learning Path Detected
 
@@ -357,6 +420,7 @@ Learning Path Summary
 ## Important Notes
 
 **Quality guidelines:**
+
 - Clear level progression
 - Justify why each prerequisite is needed
 - Provide time estimates (realistic reading + comprehension)
@@ -365,6 +429,7 @@ Learning Path Summary
 - Handle edge cases gracefully
 
 **User experience:**
+
 - Make it easy to start learning immediately
 - Show progress milestones
 - Suggest checkpoints for complex paths
@@ -372,6 +437,7 @@ Learning Path Summary
 - Encourage practical application
 
 **Graph integrity:**
+
 - Report any issues found (cycles, broken links)
 - Suggest graph improvements
 - Validate prerequisite chains make semantic sense

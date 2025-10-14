@@ -1,10 +1,53 @@
+---
+description: Run validation checks on the knowledge graph
+---
+
 # Validate Graph
 
 Run validation checks on the knowledge graph to ensure integrity.
 
+## 0. Locate AZKG Repository
+
+**Check for AZKG_REPO_PATH environment variable:**
+
+- Use bash conditional: `if [ -z "$AZKG_REPO_PATH" ]; then REPO_PATH=$(pwd); else REPO_PATH="$AZKG_REPO_PATH"; fi`
+- **If AZKG_REPO_PATH is set:** Use that path as the repository root
+- **If AZKG_REPO_PATH is not set:** Use current working directory (pwd)
+- Store result as REPO_PATH for all subsequent file operations
+
+**All file operations must use REPO_PATH:**
+
+- Read: `Read(REPO_PATH/filename.md)` or `Read("$REPO_PATH/filename.md")`
+- Write: `Write(REPO_PATH/filename.md)` or `Write("$REPO_PATH/filename.md")`
+- Edit: `Edit(REPO_PATH/filename.md)` or `Edit("$REPO_PATH/filename.md")`
+- Grep: `Grep(pattern, path=REPO_PATH)` or with explicit path
+- Glob: `Glob(pattern, path=REPO_PATH)` or with explicit path
+
+**Example usage:**
+
+```
+# Check environment variable
+if [ -z "$AZKG_REPO_PATH" ]; then
+  REPO_PATH=$(pwd)
+else
+  REPO_PATH="$AZKG_REPO_PATH"
+fi
+
+# Then use REPO_PATH for all operations
+Read("$REPO_PATH/agents.md")
+```
+
+**Concrete examples:**
+
+- If AZKG_REPO_PATH="/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg"
+  → Read("/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg/agents.md")
+- If AZKG_REPO_PATH is not set and pwd is /c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg
+  → Read("agents.md") or use full path from pwd
+
 ## Task
 
 Check markdown files for:
+
 - All wikilinks point to existing notes (no broken links)
 - "Related Concepts" sections are well-formed
 - Bidirectional relationships are consistent
@@ -15,6 +58,7 @@ Check markdown files for:
 ### 1. Find All Wikilinks
 
 Use Grep to extract all wikilinks from all markdown files:
+
 ```bash
 # Find all wikilinks in the format [[note_name]]
 Grep "\[\[([^\]]+)\]\]" --glob="*.md" --output_mode="content" -n
@@ -25,12 +69,14 @@ Extract unique note names from results.
 ### 2. Verify All Wikilinks Point to Existing Files
 
 For each unique wikilink target found:
+
 - Use Glob to check if `target.md` exists in repository root
 - Record any broken links (wikilink but no corresponding file)
 
 ### 3. Check Bidirectional Consistency
 
 For notes with "Related Concepts" sections:
+
 - Read notes with "Extends" relationships
 - Verify target notes have "Extended By" back-reference
 - Read notes with "Prerequisites" relationships
@@ -39,6 +85,7 @@ For notes with "Related Concepts" sections:
 ### 4. Validate YAML Frontmatter
 
 Use Read tool to check a sample of notes:
+
 - YAML frontmatter starts with `---` and ends with `---`
 - `tags:` field is present and is an array
 - Tags use lowercase-with-hyphens format
@@ -53,6 +100,7 @@ Use Read tool to check a sample of notes:
 ## Output Format
 
 **Success:**
+
 ```
 Graph Validation
 ============================================================
@@ -73,6 +121,7 @@ Statistics:
 ```
 
 **Failure:**
+
 ```
 Graph Validation
 ============================================================
@@ -94,21 +143,25 @@ Recommendations:
 ## Validation Rules
 
 **Wikilink validation:**
+
 - Every `[[note_name]]` must have corresponding `note_name.md` file
 - Case-sensitive matching
 - Should NOT include `.md` in wikilink (use `[[note]]` not `[[note.md]]`)
 
 **Bidirectional validation:**
+
 - If A extends B, then B should have "Extended By" section mentioning A
 - If A is prerequisite for B, then B should mention A in "Prerequisites"
 - Not always perfectly symmetric, but should be logically consistent
 
 **YAML validation:**
+
 - Well-formed YAML with proper delimiters
 - Tags field exists and is array
 - Tags follow naming convention (lowercase-with-hyphens)
 
 **Structural validation:**
+
 - Notes should have "Related Concepts" section (unless intentionally standalone)
 - MOC files should only reference existing notes
 - No circular dependencies in prerequisite chains (optional advanced check)
@@ -118,6 +171,7 @@ Recommendations:
 For each error type, suggest fixes:
 
 **Broken wikilinks:**
+
 ```
 File: example.md:42
 Issue: References [[missing_note]]
@@ -128,6 +182,7 @@ Fixes:
 ```
 
 **Missing inverse relationships:**
+
 ```
 File: agents.md
 Issue: Extends [[semantic_routing]] but inverse not found
@@ -138,6 +193,7 @@ Fix:
 ```
 
 **Orphaned notes:**
+
 ```
 File: lonely_note.md
 Issue: No "Related Concepts" section

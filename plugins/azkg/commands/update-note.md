@@ -1,15 +1,59 @@
+---
+description: Update a note's metadata (title, tags, or summary)
+---
+
 # Update Note
 
 Update a note's metadata (title, tags, or summary) in the YAML frontmatter.
 
+## 0. Locate AZKG Repository
+
+**Check for AZKG_REPO_PATH environment variable:**
+
+- Use bash conditional: `if [ -z "$AZKG_REPO_PATH" ]; then REPO_PATH=$(pwd); else REPO_PATH="$AZKG_REPO_PATH"; fi`
+- **If AZKG_REPO_PATH is set:** Use that path as the repository root
+- **If AZKG_REPO_PATH is not set:** Use current working directory (pwd)
+- Store result as REPO_PATH for all subsequent file operations
+
+**All file operations must use REPO_PATH:**
+
+- Read: `Read(REPO_PATH/filename.md)` or `Read("$REPO_PATH/filename.md")`
+- Write: `Write(REPO_PATH/filename.md)` or `Write("$REPO_PATH/filename.md")`
+- Edit: `Edit(REPO_PATH/filename.md)` or `Edit("$REPO_PATH/filename.md")`
+- Grep: `Grep(pattern, path=REPO_PATH)` or with explicit path
+- Glob: `Glob(pattern, path=REPO_PATH)` or with explicit path
+
+**Example usage:**
+
+```
+# Check environment variable
+if [ -z "$AZKG_REPO_PATH" ]; then
+  REPO_PATH=$(pwd)
+else
+  REPO_PATH="$AZKG_REPO_PATH"
+fi
+
+# Then use REPO_PATH for all operations
+Read("$REPO_PATH/agents.md")
+```
+
+**Concrete examples:**
+
+- If AZKG_REPO_PATH="/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg"
+  → Read("/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg/agents.md")
+- If AZKG_REPO_PATH is not set and pwd is /c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg
+  → Read("agents.md") or use full path from pwd
+
 ## Input
 
 User provides filename and fields to update:
+
 - `/update-note agents.md --title "AI Agents: Autonomous Intelligence Systems"`
 - `/update-note agents.md --tags "ai,agents,llm,autonomous"`
 - `/update-note agents.md --summary "Brief new summary"`
 
 Can update multiple fields in one command:
+
 - `/update-note agents.md --title "New Title" --tags "new,tags"`
 
 ## Execution Steps
@@ -21,6 +65,7 @@ Ensure filename has `.md` extension.
 ### 2. Verify Note Exists
 
 Use Glob to check note exists:
+
 ```bash
 Glob "agents.md"
 ```
@@ -34,16 +79,20 @@ Use Read tool to get full note content, including current YAML frontmatter.
 Use Edit tool to update the specific fields:
 
 **For title update:**
+
 - No YAML field for title (title is the first `#` heading)
 - Update the first `# Heading` line after YAML frontmatter
 
 **For tags update:**
+
 ```yaml
 ---
 tags: [old, tags]
 ---
 ```
+
 becomes:
+
 ```yaml
 ---
 tags: [new, tags, here]
@@ -51,6 +100,7 @@ tags: [new, tags, here]
 ```
 
 **For summary update:**
+
 - Summary is the first paragraph after title (not in YAML)
 - Replace first paragraph after title heading
 
@@ -90,10 +140,12 @@ Summary:
 ## Validation
 
 Before updating:
+
 - Note must exist
 - At least one field (title, tags, or summary) must be specified
 
 After updating:
+
 - YAML frontmatter remains well-formed
 - Tags follow naming convention (lowercase-with-hyphens)
 - Title and summary are non-empty
@@ -101,6 +153,7 @@ After updating:
 ## Tag Guidelines
 
 When updating tags, follow best practices:
+
 - **3-6 tags** per note (enough for discovery, not too many)
 - **Mix dimensions**: technology + domain + content type
 - **Lowercase with hyphens**: `first-principles` not `FirstPrinciples`

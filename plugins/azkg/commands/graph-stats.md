@@ -1,10 +1,53 @@
+---
+description: Display comprehensive statistics about the knowledge graph
+---
+
 # Graph Stats
 
 Display comprehensive statistics about the knowledge graph.
 
+## 0. Locate AZKG Repository
+
+**Check for AZKG_REPO_PATH environment variable:**
+
+- Use bash conditional: `if [ -z "$AZKG_REPO_PATH" ]; then REPO_PATH=$(pwd); else REPO_PATH="$AZKG_REPO_PATH"; fi`
+- **If AZKG_REPO_PATH is set:** Use that path as the repository root
+- **If AZKG_REPO_PATH is not set:** Use current working directory (pwd)
+- Store result as REPO_PATH for all subsequent file operations
+
+**All file operations must use REPO_PATH:**
+
+- Read: `Read(REPO_PATH/filename.md)` or `Read("$REPO_PATH/filename.md")`
+- Write: `Write(REPO_PATH/filename.md)` or `Write("$REPO_PATH/filename.md")`
+- Edit: `Edit(REPO_PATH/filename.md)` or `Edit("$REPO_PATH/filename.md")`
+- Grep: `Grep(pattern, path=REPO_PATH)` or with explicit path
+- Glob: `Glob(pattern, path=REPO_PATH)` or with explicit path
+
+**Example usage:**
+
+```
+# Check environment variable
+if [ -z "$AZKG_REPO_PATH" ]; then
+  REPO_PATH=$(pwd)
+else
+  REPO_PATH="$AZKG_REPO_PATH"
+fi
+
+# Then use REPO_PATH for all operations
+Read("$REPO_PATH/agents.md")
+```
+
+**Concrete examples:**
+
+- If AZKG_REPO_PATH="/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg"
+  → Read("/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg/agents.md")
+- If AZKG_REPO_PATH is not set and pwd is /c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg
+  → Read("agents.md") or use full path from pwd
+
 ## Task
 
 Use Grep and Glob to calculate:
+
 - Total notes count
 - Total MOC files count
 - Relationship counts by type
@@ -16,6 +59,7 @@ Use Grep and Glob to calculate:
 ### 1. Count Total Notes
 
 Use Glob to count all markdown files (excluding MOCs):
+
 ```bash
 # Count all .md files
 Glob "*.md"
@@ -26,6 +70,7 @@ Filter out MOC files (files ending in `_moc.md`) for pure note count.
 ### 2. Count MOC Files
 
 Use Glob to find MOC files:
+
 ```bash
 # Find all MOC files
 Glob "*_moc.md"
@@ -60,6 +105,7 @@ For each type, also count individual relationship entries by counting lines star
 ### 4. Extract and Count Tags
 
 Use Grep to find all tags in YAML frontmatter:
+
 ```bash
 # Find all tags lines
 Grep "^tags: \[" --glob="*.md" --output_mode="content"
@@ -116,12 +162,14 @@ Graph Health:
 After displaying stats, provide brief analysis:
 
 **Good signs:**
+
 - Balanced relationship distribution (no single type dominates)
 - High average tags per note (3-6 ideal)
 - Few orphaned notes (<5%)
 - Diverse tag usage (no extreme tag concentration)
 
 **Potential issues:**
+
 - Many orphaned notes → Use `/expand-graph` to discover relationships
 - Imbalanced relationships → Consider adding missing relationship types
 - Tag concentration → Some notes may need more specific tags
@@ -144,6 +192,7 @@ After displaying stats, provide brief analysis:
 ## Present Results
 
 After displaying stats:
+
 - Highlight any concerning metrics (too many orphaned notes, imbalanced relationships)
 - Suggest actions (use `/expand-graph` on orphaned notes, add missing relationship types)
 - Celebrate growth (if note count is increasing, congratulate user on knowledge expansion)

@@ -1,15 +1,59 @@
+---
+description: Search across all notes for a phrase or pattern with context
+---
+
 # Search Notes
 
 You are tasked with searching across all notes in the Zettelkasten for a specific phrase or pattern, showing context for each match.
 
+## 0. Locate AZKG Repository
+
+**Check for AZKG_REPO_PATH environment variable:**
+
+- Use bash conditional: `if [ -z "$AZKG_REPO_PATH" ]; then REPO_PATH=$(pwd); else REPO_PATH="$AZKG_REPO_PATH"; fi`
+- **If AZKG_REPO_PATH is set:** Use that path as the repository root
+- **If AZKG_REPO_PATH is not set:** Use current working directory (pwd)
+- Store result as REPO_PATH for all subsequent file operations
+
+**All file operations must use REPO_PATH:**
+
+- Read: `Read(REPO_PATH/filename.md)` or `Read("$REPO_PATH/filename.md")`
+- Write: `Write(REPO_PATH/filename.md)` or `Write("$REPO_PATH/filename.md")`
+- Edit: `Edit(REPO_PATH/filename.md)` or `Edit("$REPO_PATH/filename.md")`
+- Grep: `Grep(pattern, path=REPO_PATH)` or with explicit path
+- Glob: `Glob(pattern, path=REPO_PATH)` or with explicit path
+
+**Example usage:**
+
+```
+# Check environment variable
+if [ -z "$AZKG_REPO_PATH" ]; then
+  REPO_PATH=$(pwd)
+else
+  REPO_PATH="$AZKG_REPO_PATH"
+fi
+
+# Then use REPO_PATH for all operations
+Read("$REPO_PATH/agents.md")
+```
+
+**Concrete examples:**
+
+- If AZKG_REPO_PATH="/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg"
+  → Read("/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg/agents.md")
+- If AZKG_REPO_PATH is not set and pwd is /c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg
+  → Read("agents.md") or use full path from pwd
+
 ## 1. Parse Search Input
 
 **Input format:** User provides either:
+
 - A simple phrase: `/search-notes "semantic routing"`
 - A regex pattern: `/search-notes "async.*await"`
 - Multiple terms: `/search-notes "MCP security authentication"`
 
 **Extract:**
+
 - Search pattern (the phrase or regex)
 - Optional flags (case-sensitive, whole word, etc.)
 
@@ -27,6 +71,7 @@ output_mode: "content"
 ```
 
 **Search strategy:**
+
 - Search all `.md` files in repository root
 - Include line numbers for reference
 - Show 2 lines context before and after each match
@@ -64,6 +109,7 @@ Match 1 (line 78):
 ```
 
 **Formatting guidelines:**
+
 - Use `##` headers for each file
 - Show match count per file
 - Include line numbers for easy navigation
@@ -76,15 +122,18 @@ Match 1 (line 78):
 **Provide insights:**
 
 **Thematic clustering:**
+
 - Which tags/domains show up most?
 - Are matches concentrated in certain batches?
 - Example: "Most matches in MCP Protocol notes (5 files)"
 
 **Related concepts:**
+
 - Which notes frequently appear together in results?
 - Suggest wikilinks between related notes if not already linked
 
 **Coverage assessment:**
+
 - Is this concept well-covered or sparse?
 - Suggest potential new notes or expansions
 
@@ -93,18 +142,22 @@ Match 1 (line 78):
 **Based on search results, suggest:**
 
 **If many matches (>10):**
+
 - "This concept is well-covered. Consider creating a MOC for [topic]"
 - "Consider using `/generate-moc` for this theme"
 
 **If few matches (1-3):**
+
 - "Limited coverage found. Consider `/create-note` for deeper treatment"
 - "Consider `/expand-graph` on existing notes to add related content"
 
 **If related concepts found:**
+
 - "Found related notes that aren't linked. Consider `/link-notes`"
 - List specific note pairs that should be connected
 
 **If search term in multiple contexts:**
+
 - "This term appears in different contexts: [list domains]"
 - "Consider creating separate atomic notes for each context"
 
@@ -113,22 +166,27 @@ Match 1 (line 78):
 **Support optional flags:**
 
 **Case-sensitive search:**
+
 - User specifies: `/search-notes --case-sensitive "Python"`
 - Set `-i: false` in Grep
 
 **Whole word only:**
+
 - User specifies: `/search-notes --whole-word "test"`
 - Adjust pattern to: `\btest\b`
 
 **Regex mode:**
+
 - User specifies: `/search-notes --regex "mcp.*server"`
 - Pass pattern directly to Grep
 
 **More context:**
+
 - User specifies: `/search-notes --context 5 "pattern"`
 - Set `-C: 5` for 5 lines of context
 
 **Files only (no content):**
+
 - User specifies: `/search-notes --files-only "pattern"`
 - Set `output_mode: "files_with_matches"`
 
@@ -166,21 +224,25 @@ Search Summary for "<search-pattern>"
 **Recognize common search needs:**
 
 **Tag search:**
+
 - Input: `/search-notes "#mcp"`
 - Search in YAML frontmatter tags specifically
 - List all notes with that tag
 
 **Broken wikilinks:**
+
 - Input: `/search-notes --broken-links`
 - Find `[[wikilinks]]` that don't point to existing files
 - Report with locations
 
 **TODOs and incomplete sections:**
+
 - Input: `/search-notes --todos`
 - Find `TODO`, `FIXME`, `[placeholder]`, etc.
 - Report what needs completion
 
 **Missing related concepts:**
+
 - Input: `/search-notes --no-relationships`
 - Find notes with empty "Related Concepts" sections
 - Suggest running `/expand-graph` on them
@@ -188,36 +250,43 @@ Search Summary for "<search-pattern>"
 ## Usage Examples
 
 **Simple search:**
+
 ```
 /search-notes "semantic routing"
 ```
 
 **Regex search:**
+
 ```
 /search-notes --regex "async.*(await|runtime)"
 ```
 
 **Case-sensitive search:**
+
 ```
 /search-notes --case-sensitive "Python"
 ```
 
 **Find all notes about a technology:**
+
 ```
 /search-notes --context 3 "FastMCP"
 ```
 
 **Tag search:**
+
 ```
 /search-notes "#agents"
 ```
 
 **Find broken links:**
+
 ```
 /search-notes --broken-links
 ```
 
 **Find incomplete notes:**
+
 ```
 /search-notes --todos
 ```
@@ -225,17 +294,20 @@ Search Summary for "<search-pattern>"
 ## Important Notes
 
 **Performance:**
+
 - Grep is fast even across 93+ notes
 - Results should return quickly
 - If >100 matches, consider limiting output or grouping
 
 **Formatting:**
+
 - Keep results scannable
 - Use consistent formatting
 - Include enough context to understand match
 - Link to line numbers for easy navigation: `note.md:45`
 
 **Accuracy:**
+
 - Match user's search term exactly as specified
 - Don't modify regex patterns unless clarifying with user
 - Report if pattern yields no results

@@ -1,10 +1,53 @@
+---
+description: Add a typed bidirectional relationship between two notes
+---
+
 # Graph Add Relationship
 
 Manually add a typed relationship between two notes with bidirectional update.
 
+## 0. Locate AZKG Repository
+
+**Check for AZKG_REPO_PATH environment variable:**
+
+- Use bash conditional: `if [ -z "$AZKG_REPO_PATH" ]; then REPO_PATH=$(pwd); else REPO_PATH="$AZKG_REPO_PATH"; fi`
+- **If AZKG_REPO_PATH is set:** Use that path as the repository root
+- **If AZKG_REPO_PATH is not set:** Use current working directory (pwd)
+- Store result as REPO_PATH for all subsequent file operations
+
+**All file operations must use REPO_PATH:**
+
+- Read: `Read(REPO_PATH/filename.md)` or `Read("$REPO_PATH/filename.md")`
+- Write: `Write(REPO_PATH/filename.md)` or `Write("$REPO_PATH/filename.md")`
+- Edit: `Edit(REPO_PATH/filename.md)` or `Edit("$REPO_PATH/filename.md")`
+- Grep: `Grep(pattern, path=REPO_PATH)` or with explicit path
+- Glob: `Glob(pattern, path=REPO_PATH)` or with explicit path
+
+**Example usage:**
+
+```
+# Check environment variable
+if [ -z "$AZKG_REPO_PATH" ]; then
+  REPO_PATH=$(pwd)
+else
+  REPO_PATH="$AZKG_REPO_PATH"
+fi
+
+# Then use REPO_PATH for all operations
+Read("$REPO_PATH/agents.md")
+```
+
+**Concrete examples:**
+
+- If AZKG_REPO_PATH="/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg"
+  → Read("/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg/agents.md")
+- If AZKG_REPO_PATH is not set and pwd is /c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg
+  → Read("agents.md") or use full path from pwd
+
 ## Input
 
 User provides:
+
 - Source note: `agents.md`
 - Target note: `semantic_routing.md`
 - Relationship type: `related_topics` (or `prerequisites`, `extends`, `alternatives`, `examples`)
@@ -29,6 +72,7 @@ Ensure both filenames have `.md` extension.
 ### 2. Verify Both Notes Exist
 
 Use Glob to verify both files exist:
+
 ```bash
 Glob "agents.md"
 Glob "semantic_routing.md"
@@ -57,6 +101,7 @@ Use Read tool to get target note content, including current "Related Concepts" s
 ### 6. Add Inverse Relationship
 
 Determine inverse relationship type:
+
 - `prerequisites` in A → add A to `related_topics` or `extended_by` in B (depending on context)
 - `related_topics` in A → add A to `related_topics` in B
 - `extends` in A → add A to `extended_by` in B
@@ -102,11 +147,13 @@ Updated files:
 ## Validation
 
 Before adding:
+
 - Both notes must exist
 - Relationship type must be valid
 - "Why" explanation should be provided (required for quality)
 
 After adding:
+
 - Both notes should have matching inverse relationships
 - No duplicate relationships in either file
 

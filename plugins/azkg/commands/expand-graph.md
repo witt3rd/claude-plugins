@@ -1,19 +1,64 @@
+---
+description: Discover missing relationships for a note via multi-strategy analysis
+---
+
 # Expand Graph
 
 Discover missing relationships between a note and the rest of the knowledge graph through multi-strategy analysis.
 
+## 0. Locate AZKG Repository
+
+**Check for AZKG_REPO_PATH environment variable:**
+
+- Use bash conditional: `if [ -z "$AZKG_REPO_PATH" ]; then REPO_PATH=$(pwd); else REPO_PATH="$AZKG_REPO_PATH"; fi`
+- **If AZKG_REPO_PATH is set:** Use that path as the repository root
+- **If AZKG_REPO_PATH is not set:** Use current working directory (pwd)
+- Store result as REPO_PATH for all subsequent file operations
+
+**All file operations must use REPO_PATH:**
+
+- Read: `Read(REPO_PATH/filename.md)` or `Read("$REPO_PATH/filename.md")`
+- Write: `Write(REPO_PATH/filename.md)` or `Write("$REPO_PATH/filename.md")`
+- Edit: `Edit(REPO_PATH/filename.md)` or `Edit("$REPO_PATH/filename.md")`
+- Grep: `Grep(pattern, path=REPO_PATH)` or with explicit path
+- Glob: `Glob(pattern, path=REPO_PATH)` or with explicit path
+
+**Example usage:**
+
+```
+# Check environment variable
+if [ -z "$AZKG_REPO_PATH" ]; then
+  REPO_PATH=$(pwd)
+else
+  REPO_PATH="$AZKG_REPO_PATH"
+fi
+
+# Then use REPO_PATH for all operations
+Read("$REPO_PATH/agents.md")
+```
+
+**Concrete examples:**
+
+- If AZKG_REPO_PATH="/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg"
+  → Read("/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg/agents.md")
+- If AZKG_REPO_PATH is not set and pwd is /c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg
+  → Read("agents.md") or use full path from pwd
+
 ## 1. Parse Input and Load Note
 
 **Input format:** User provides:
+
 - A note name: `/expand-graph mcp_security.md`
 - Or just the topic: `/expand-graph mcp_security`
 
 **Normalize and validate:**
+
 - Add `.md` extension if missing
 - Use Glob to verify the target note exists
 - If not found, suggest similar notes using Glob
 
 **Read the target note:**
+
 - Use Read tool to get full content
 - Extract YAML tags
 - Extract main concepts and topics
@@ -24,23 +69,28 @@ Discover missing relationships between a note and the rest of the knowledge grap
 **Analyze note content for:**
 
 **Technical terms:**
+
 - Technologies mentioned (Python, Rust, MCP, OAuth, etc.)
 - Frameworks and tools (FastMCP, React, etc.)
 - Protocols and standards (HTTP, JWT, RFC 8707, etc.)
 
 **Domain concepts:**
+
 - Core ideas discussed (authentication, security, agents, etc.)
 - Patterns mentioned (observer, factory, reactive, etc.)
 - Problem domains (enterprise, web, async, etc.)
 
 **Wikilinks:**
+
 - Existing wikilinks in content `[[note]]`
 - Are these also in "Related Concepts"? If not, they're candidates to add
 
 **Tags:**
+
 - YAML frontmatter tags provide high-level domains
 
 **Output concept extraction:**
+
 ```
 📖 Analyzing mcp_security.md...
 
@@ -64,6 +114,7 @@ Discover missing relationships between a note and the rest of the knowledge grap
 **Strategy 1: Content-Based Search (Grep)**
 
 For each key concept, search other notes:
+
 ```
 Searching for "OAuth" across knowledge base...
 Found in:
@@ -79,6 +130,7 @@ Found in:
 ```
 
 **Filter out:**
+
 - The target note itself
 - Notes already in "Related Concepts" section
 - Low-relevance matches (1-2 mentions)
@@ -86,6 +138,7 @@ Found in:
 **Strategy 2: Tag-Based Discovery**
 
 Use Grep to find notes with overlapping tags:
+
 ```
 Target has tags: #mcp #security #authentication
 
@@ -100,6 +153,7 @@ Parse out tags and find overlaps:
 **Strategy 3: Wikilink Analysis**
 
 Use Grep to find wikilinks in target note content:
+
 ```
 Checking wikilinks in content vs "Related Concepts" section...
 
@@ -115,6 +169,7 @@ Found in other notes' "Related Concepts" sections pointing here:
 **Strategy 4: Research with Perplexity**
 
 Ask targeted questions:
+
 ```
 Query 1: "What foundational knowledge is required to understand [main topic of note]?"
 Query 2: "What concepts are commonly related to [main topic] in practice?"
@@ -123,6 +178,7 @@ Query 4: "What are alternative approaches to [main topic]?"
 ```
 
 Use Perplexity responses to:
+
 - Discover conceptual prerequisites
 - Find related domains
 - Identify common patterns
@@ -135,30 +191,35 @@ Use Perplexity responses to:
 ### Relationship Type
 
 **Prerequisites:** Does target need this first?
+
 - Contains foundational concepts mentioned in target
 - Target assumes knowledge from this note
 - Complexity: This note is simpler/more basic
 - Example: mcp_overview → mcp_security
 
 **Related Topics:** Parallel/complementary topics?
+
 - Same level of complexity
 - Different but connected domain
 - Solve similar problems differently
 - Example: api_security ↔ mcp_security
 
 **Extends:** Does target build on this?
+
 - Target is specialized version
 - Adds capabilities to base concept
 - Target assumes this as foundation
 - Example: mcp_security extends mcp_architecture
 
 **Examples:** Is this a concrete implementation?
+
 - Shows practical application of target concepts
 - Code/pattern implementing target ideas
 - Case study of target in practice
 - Example: fastmcp_auth is example of mcp_security
 
 **Alternatives:** Different approach to same problem?
+
 - Solves same problem differently
 - Competing technology or pattern
 - Different paradigm
@@ -167,6 +228,7 @@ Use Perplexity responses to:
 ### Confidence Score
 
 **High (★★★★★):**
+
 - Many shared concepts (10+)
 - Strong semantic relationship
 - Confirmed by Perplexity research
@@ -174,6 +236,7 @@ Use Perplexity responses to:
 - Example: OAuth fundamentals for OAuth-heavy security note
 
 **Medium (★★★☆☆):**
+
 - Moderate overlap (5-9 concepts)
 - Reasonable semantic connection
 - Supported by tag overlap
@@ -181,6 +244,7 @@ Use Perplexity responses to:
 - Example: General API security for MCP security
 
 **Low (★★☆☆☆):**
+
 - Minimal overlap (2-4 concepts)
 - Weak semantic connection
 - Speculative relationship
@@ -190,6 +254,7 @@ Use Perplexity responses to:
 ### Evidence Collection
 
 **For each relationship, capture:**
+
 - **Frequency:** How many concept matches?
 - **Quotes:** Specific text showing connection
 - **Location:** Where in note is this relevant?
@@ -401,6 +466,7 @@ Choice: █
 ```
 
 **Track decisions:**
+
 - Accepted relationships
 - Rejected relationships (with reasons)
 - Modified relationships (type changes)
@@ -414,12 +480,14 @@ Choice: █
 Use Edit tool to update target note's "Related Concepts" section:
 
 **Read the target note:**
+
 ```
 Use Read tool to get full content
 Parse "Related Concepts" section
 ```
 
 **Add forward relationship:**
+
 ```markdown
 ## Related Concepts
 
@@ -435,6 +503,7 @@ Parse "Related Concepts" section
 **For each note mentioned, add inverse relationship:**
 
 **Read the related note:**
+
 ```
 Use Read tool to get its "Related Concepts" section
 ```
@@ -559,6 +628,7 @@ Updated 9 additional notes with inverse relationships:
 ## 9. Handle Edge Cases
 
 **No new relationships found:**
+
 ```
 ✅ Graph Analysis Complete
 
@@ -580,6 +650,7 @@ No new high-confidence relationships discovered for mcp_security.md
 ```
 
 **Conflicting relationships:**
+
 ```
 ⚠️ Potential Conflict Detected
 
@@ -605,6 +676,7 @@ Choice: █
 ```
 
 **Circular dependency risk:**
+
 ```
 ⚠️ Circular Dependency Warning
 
@@ -633,6 +705,7 @@ Choice: █
 ## 11. Important Notes
 
 **Quality principles:**
+
 - Evidence over guessing
 - Confidence scoring for transparency
 - User control over changes
@@ -640,12 +713,14 @@ Choice: █
 - Clear reasoning for every suggestion
 
 **Performance considerations:**
+
 - Grep can search 93 notes quickly
 - Perplexity queries in parallel where possible
 - Cache concept extractions
 - Filter aggressively before showing to user
 
 **User experience:**
+
 - Make suggestions actionable
 - Provide escape hatches
 - Allow customization

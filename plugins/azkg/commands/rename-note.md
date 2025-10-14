@@ -1,6 +1,48 @@
+---
+description: Rename a note and update all wikilink references
+---
+
 # Rename Note Command
 
 Rename a note file and update all wikilink references throughout the knowledge base.
+
+## 0. Locate AZKG Repository
+
+**Check for AZKG_REPO_PATH environment variable:**
+
+- Use bash conditional: `if [ -z "$AZKG_REPO_PATH" ]; then REPO_PATH=$(pwd); else REPO_PATH="$AZKG_REPO_PATH"; fi`
+- **If AZKG_REPO_PATH is set:** Use that path as the repository root
+- **If AZKG_REPO_PATH is not set:** Use current working directory (pwd)
+- Store result as REPO_PATH for all subsequent file operations
+
+**All file operations must use REPO_PATH:**
+
+- Read: `Read(REPO_PATH/filename.md)` or `Read("$REPO_PATH/filename.md")`
+- Write: `Write(REPO_PATH/filename.md)` or `Write("$REPO_PATH/filename.md")`
+- Edit: `Edit(REPO_PATH/filename.md)` or `Edit("$REPO_PATH/filename.md")`
+- Grep: `Grep(pattern, path=REPO_PATH)` or with explicit path
+- Glob: `Glob(pattern, path=REPO_PATH)` or with explicit path
+
+**Example usage:**
+
+```
+# Check environment variable
+if [ -z "$AZKG_REPO_PATH" ]; then
+  REPO_PATH=$(pwd)
+else
+  REPO_PATH="$AZKG_REPO_PATH"
+fi
+
+# Then use REPO_PATH for all operations
+Read("$REPO_PATH/agents.md")
+```
+
+**Concrete examples:**
+
+- If AZKG_REPO_PATH="/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg"
+  → Read("/c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg/agents.md")
+- If AZKG_REPO_PATH is not set and pwd is /c/Users/dothompson/OneDrive/src/witt3rd/donald-azkg
+  → Read("agents.md") or use full path from pwd
 
 ## Task
 
@@ -11,6 +53,7 @@ Rename a note file and update all wikilink references throughout the knowledge b
 ## Input
 
 User provides:
+
 - Old filename (e.g., "mcp_sdk.md" or just "mcp_sdk")
 - New filename (e.g., "python_mcp_sdk.md" or just "python_mcp_sdk")
 
@@ -19,6 +62,7 @@ User provides:
 ### 1. Normalize Filenames
 
 Ensure both filenames have `.md` extension:
+
 ```
 old_filename = "mcp_sdk" → "mcp_sdk.md"
 new_filename = "python_mcp_sdk" → "python_mcp_sdk.md"
@@ -27,6 +71,7 @@ new_filename = "python_mcp_sdk" → "python_mcp_sdk.md"
 ### 2. Verify Old File Exists
 
 Use Glob to check if old file exists:
+
 ```bash
 # Check if file exists
 Glob mcp_sdk.md
@@ -37,6 +82,7 @@ If not found, report error to user.
 ### 3. Check New Filename Not In Use
 
 Use Glob to ensure new filename doesn't already exist:
+
 ```bash
 # Check if new filename is available
 Glob python_mcp_sdk.md
@@ -47,6 +93,7 @@ If exists, report error to user.
 ### 4. Find All Wikilinks to Old Note
 
 Use Grep to find all markdown files containing wikilinks to the old note:
+
 ```bash
 # Find all files with wikilinks to old note
 Grep "\[\[mcp_sdk\]\]" --glob="*.md" --output_mode="files_with_matches"
@@ -57,6 +104,7 @@ Store list of files that need updating.
 ### 5. Rename the Physical File
 
 Use Bash to rename the file:
+
 ```bash
 # Rename the file
 mv "mcp_sdk.md" "python_mcp_sdk.md"
@@ -75,6 +123,7 @@ For each file found in step 4, use Edit tool to replace wikilinks:
 ```
 
 Use Edit tool for each file:
+
 - old_string: `[[mcp_sdk]]`
 - new_string: `[[python_mcp_sdk]]`
 - replace_all: true (to catch all occurrences in the file)
@@ -88,6 +137,7 @@ Check if any MOC files were updated in step 6. If so, verify the context around 
 ## Output Format
 
 Report to user:
+
 ```
 ============================================================
 Renamed Note: mcp_sdk.md → python_mcp_sdk.md
@@ -120,6 +170,7 @@ Renamed Note: mcp_sdk.md → python_mcp_sdk.md
 ## Validation
 
 After renaming:
+
 - Old file no longer exists (verify with Glob)
 - New file exists (verify with Glob)
 - No remaining wikilinks to old filename (verify with Grep)
@@ -143,6 +194,7 @@ After renaming:
 ## Present Results
 
 After renaming:
+
 - Show summary of changes made
 - Highlight number of files and references updated
 - Suggest reviewing MOC files to ensure context still makes sense
@@ -151,18 +203,21 @@ After renaming:
 ## Common Patterns
 
 **Language-specific SDK notes:**
+
 ```
 mcp_sdk.md → python_mcp_sdk.md
 (leaves room for typescript_mcp_sdk.md, rust_mcp_sdk.md, etc.)
 ```
 
 **Generic to specific:**
+
 ```
 agents.md → ai_agents.md
 deployment.md → docker_deployment.md
 ```
 
 **Consistency with existing patterns:**
+
 ```
 mcp-overview.md → mcp_overview.md  (underscore convention)
 llm_agents.md → agents.md  (when already specific enough)
