@@ -1,7 +1,6 @@
 {
   "name": "azkg",
   "version": "0.1.0",
-  "displayName": "Agentic-ZKG",
   "description": "Agent-maintained Zettelkasten knowledge graph",
   "author": {
     "name": "Donald Thompson",

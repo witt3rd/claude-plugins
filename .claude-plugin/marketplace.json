@@ -14,6 +14,16 @@
         "name": "Donald Thompson",
         "email": "dthompson@witt3rd.com"
       }
+    },
+    {
+      "name": "telegram",
+      "source": "./plugins/telegram",
+      "description": "Access Telegram conversations, channels, and Saved Messages via natural language queries",
+      "version": "0.1.0",
+      "author": {
+        "name": "Donald Thompson",
+        "email": "dthompson@witt3rd.com"
+      }
     }
   ],
   "metadata": {

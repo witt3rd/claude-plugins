@@ -1,0 +1,13 @@
+{
+  "name": "telegram",
+  "version": "0.1.0",
+  "displayName": "Telegram Reader",
+  "description": "Access Telegram conversations, channels, and Saved Messages via natural language queries",
+  "author": {
+    "name": "Donald Thompson",
+    "email": "dthompson@witt3rd.com"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/witt3rd/claude-plugins",
+  "mcpServers": "./mcp-config.json"
+}

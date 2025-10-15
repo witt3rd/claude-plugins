@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "telegram": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/c/Users/dothompson/src/witt3rd/claude-plugins/plugins/telegram/mcp-server",
+        "run",
+        "server.py"
+      ],
+      "env": {}
+    }
+  }
+}
