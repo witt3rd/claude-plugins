@@ -8,5 +8,5 @@
   },
   "license": "MIT",
   "repository": "https://github.com/witt3rd/claude-plugins",
-  "mcpServers": "../mcp-config.json"
+  "mcpServers": "./mcp-config.json"
 }
