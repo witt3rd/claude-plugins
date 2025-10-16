@@ -13,16 +13,6 @@ build/
 venv/
 ENV/
 
-# Credentials and session
-*.session
-*.session-journal
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
 # OS
 .DS_Store
 Thumbs.db

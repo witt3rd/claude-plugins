@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "telegram": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "${CLAUDE_PLUGIN_ROOT}/mcp-server",
+        "run",
+        "server.py"
+      ],
+      "env": {
+        "TELEGRAM_API_ID": "29780514",
+        "TELEGRAM_API_HASH": "54ef7ab93e78e7e05f48cb1239edd6fa"
+      }
+    }
+  }
+}

@@ -7,6 +7,5 @@
     "email": "dthompson@witt3rd.com"
   },
   "license": "MIT",
-  "repository": "https://github.com/witt3rd/claude-plugins",
-  "mcpServers": "./mcp-config.json"
+  "repository": "https://github.com/witt3rd/claude-plugins"
 }
