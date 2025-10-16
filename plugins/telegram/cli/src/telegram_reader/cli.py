@@ -266,7 +266,10 @@ def list_my_channels(phone: Optional[str]) -> None:
 
     async def _list() -> None:
         api_id, api_hash = get_credentials()
-        client = TelegramClient("telegram_session", api_id, api_hash)
+        # Use shared session location with MCP server
+        session_path = Path.home() / ".cache" / "telegram_mcp_session"
+        session_path.parent.mkdir(parents=True, exist_ok=True)
+        client = TelegramClient(str(session_path), api_id, api_hash)
 
         try:
             await authenticate_client(client, phone)
@@ -297,7 +300,10 @@ def list_dialogs(phone: Optional[str]) -> None:
 
     async def _list() -> None:
         api_id, api_hash = get_credentials()
-        client = TelegramClient("telegram_session", api_id, api_hash)
+        # Use shared session location with MCP server
+        session_path = Path.home() / ".cache" / "telegram_mcp_session"
+        session_path.parent.mkdir(parents=True, exist_ok=True)
+        client = TelegramClient(str(session_path), api_id, api_hash)
 
         try:
             await authenticate_client(client, phone)
@@ -359,7 +365,10 @@ def read_message(channel: str, since: str, phone: Optional[str]) -> None:
             channel_id = int(channel)
 
         api_id, api_hash = get_credentials()
-        client = TelegramClient("telegram_session", api_id, api_hash)
+        # Use shared session location with MCP server
+        session_path = Path.home() / ".cache" / "telegram_mcp_session"
+        session_path.parent.mkdir(parents=True, exist_ok=True)
+        client = TelegramClient(str(session_path), api_id, api_hash)
 
         try:
             await authenticate_client(client, phone)

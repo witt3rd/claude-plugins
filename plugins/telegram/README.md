@@ -11,19 +11,11 @@ Access your Telegram conversations, channels, and Saved Messages via natural lan
 
 ## Setup
 
-**IMPORTANT**: MCP server setup requires TWO steps - authenticate via CLI first, then configure MCP server. This is because Telegram authentication is interactive and cannot be done through MCP.
+**IMPORTANT**: The plugin comes pre-configured with APP_ID and APP_HASH. You only need to authenticate via CLI once to create the session file.
 
-### 1. Get Telegram API Credentials
+### 1. Authenticate via CLI (One-Time Setup)
 
-1. Visit https://my.telegram.org/auth
-2. Log in with your phone number
-3. Click "API development tools"
-4. Create a new application (any name/description works)
-5. Copy your `api_id` (numeric) and `api_hash` (alphanumeric string)
-
-### 2. Set Up CLI First (Required for Authentication)
-
-The CLI tool handles interactive Telegram authentication and creates the session file needed by the MCP server.
+The CLI tool handles interactive Telegram authentication and creates the session file at `~/.cache/telegram_mcp_session.session` - shared by both CLI and MCP server.
 
 ```bash
 # Navigate to CLI directory (relative to plugin install location)
@@ -32,19 +24,6 @@ cd cli
 # Install dependencies
 uv sync
 
-# Create .env file with your credentials
-cp .env.example .env
-# Edit .env and add your TELEGRAM_API_ID and TELEGRAM_API_HASH
-```
-
-Your `cli/.env` should look like:
-```env
-TELEGRAM_API_ID=12345678
-TELEGRAM_API_HASH=abc123def456abc123def456abc123de
-```
-
-**Authenticate with Telegram:**
-```bash
 # Run any CLI command to trigger authentication
 uv run telegram-reader list-dialogs
 ```
@@ -54,62 +33,18 @@ You'll be prompted for:
 - **Verification code**: Check your Telegram app for the code
 - **2FA password** (if enabled): Your Telegram cloud password (Settings > Privacy > Two-Step Verification)
 
-This creates `telegram_session.session` in the CLI directory.
+This creates `~/.cache/telegram_mcp_session.session` which is automatically shared with the MCP server.
 
-### 3. Set Up MCP Server
+### 2. Done!
 
-The MCP server needs both the `.env` file and the authenticated session file.
+The MCP server is automatically configured when you install the plugin. Just **restart Claude Code** to load the MCP server.
 
-```bash
-# Navigate to MCP server directory
-cd ../mcp-server
-
-# Install dependencies
-uv sync
-
-# Copy .env from CLI (both need credentials)
-cp ../cli/.env .env
-
-# Copy authenticated session to Claude Code cache location
-# Windows/Git Bash:
-mkdir -p ~/.cache 2>/dev/null || true
-cp ../cli/telegram_session.session ~/.cache/telegram_mcp_session.session
-
-# Linux/macOS:
-mkdir -p ~/.cache
-cp ../cli/telegram_session.session ~/.cache/telegram_mcp_session.session
-```
-
-### 4. Configure Claude Code
-
-Add the MCP server to your project's `.mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "telegram": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "<ABSOLUTE_PATH_TO_PLUGIN>/mcp-server",
-        "run",
-        "server.py"
-      ],
-      "env": {}
-    }
-  }
-}
-```
-
-Replace `<ABSOLUTE_PATH_TO_PLUGIN>` with the full path to the telegram plugin directory (e.g., `C:/Users/username/path/to/plugins/telegram`).
-
-**Restart Claude Code** to load the MCP server.
+No additional configuration needed - the plugin includes `.mcp.json` with APP_ID and APP_HASH pre-configured, and both CLI and MCP server share the same session file.
 
 ### Security Notes
 
-- **Credentials**: Your API ID and hash are YOUR personal credentials (not bot tokens)
-- **Session file**: Contains authentication tokens - treat like a password
-- **Never commit**: Add `.env` and `*.session` to `.gitignore`
+- **APP_ID and APP_HASH**: These are application identifiers (like Telegram Desktop's app ID), not user credentials. They're safe to include in the plugin and shared by all users.
+- **Session file**: Contains YOUR authentication tokens - treat like a password. Never commit or share this file.
 - **Session location**: MCP server looks for session in `~/.cache/telegram_mcp_session.session`
 - **Session expiry**: If session expires, re-authenticate via CLI and copy session file again
 
@@ -207,9 +142,9 @@ plugins/telegram/
 - CLI uses Click for user-friendly commands
 - Telethon for MTProto access (full Telegram API)
 
-**Why two .env files?**
-- CLI and MCP server run in different directories
-- Each needs its own copy of credentials
+**Credentials**:
+- APP_ID and APP_HASH are embedded in both `mcp-server/.env` and `.mcp.json`
+- No user configuration needed - works out of the box
 - Session file is shared via `~/.cache/` location
 
 ## Telegram Concepts
@@ -239,9 +174,6 @@ For bot-based applications, consider `python-telegram-bot` instead.
 ## Troubleshooting
 
 ### Authentication Issues
-
-**Problem**: "No phone number or bot token provided"
-- **Solution**: Check `.env` file exists in both `cli/` and `mcp-server/` directories
 
 **Problem**: "SendCodeUnavailableError" or verification issues
 - **Solution**: Restart authentication via CLI, make sure you're entering phone with country code (+1234567890)
