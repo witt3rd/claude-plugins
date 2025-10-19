@@ -145,31 +145,56 @@ tags: [python, mcp, agents, sdk, api]
 
 ## 6. Write the Note
 
-**Use Write tool to create the file with this structure:**
+**IMPORTANT**: Follow the question-oriented content synthesis approach defined in `_shared_content_synthesis.md`.
+
+**Note Structure Requirements:**
+
+The note MUST follow this question-answering paradigm:
 
 ```markdown
 ---
 tags: [tag1, tag2, tag3, tag4, tag5]
 ---
-# Note Title
 
-Brief 1-2 sentence summary of the concept.
+# Note Title (Based on Central Question)
 
-## Main Content
+## Central Question
 
-Complete, self-contained explanation organized into logical sections.
+**Question**: [The single overarching question this note addresses]
 
-### Section 1: Overview
-[Core concept explanation]
+**Executive Summary**: 2-3 paragraphs previewing key insights and how the content resolves the central question.
 
-### Section 2: How It Works
-[Technical details]
+## Part I: [Domain Question 1]
 
-### Section 3: Use Cases
-[When and why to use this]
+### [Specific Question 1.1]
 
-### Section 4: Best Practices
-[Practical guidance]
+**Question**: [Clear, specific question from this section]
+
+**Answer**: [Comprehensive response including:
+- Direct answer to the question
+- Supporting evidence (specific quotes, examples, data from research)
+- Technical details and concrete information
+- Implications and connections to broader themes]
+
+### [Specific Question 1.2]
+
+**Question**: [Next specific question]
+
+**Answer**: [Evidence-based response...]
+
+## Part II: [Domain Question 2]
+
+### [Specific Question 2.1]
+
+**Question**: [Clear question]
+
+**Answer**: [Comprehensive response with evidence...]
+
+[Continue with additional parts and sections as needed]
+
+## Resolution: [Answer to Central Question]
+
+Synthesize domain insights to definitively resolve the central question posed at the beginning.
 
 ## Related Concepts
 
@@ -184,20 +209,26 @@ Complete, self-contained explanation organized into logical sections.
 
 ## References
 
-[If research provided citations, include them here]
-[1] Source URL
-[2] Source URL
+[1] Source URL from Perplexity research
+[2] Source URL from Perplexity research
 ```
 
-**Content guidelines:**
+**Content Synthesis Guidelines** (from `_shared_content_synthesis.md`):
 
-- Write for LLM context consumption, not just human reading
-- Complete enough to stand alone when attached to prompt
-- Technical and specific, avoid vague generalities
-- No hyperbolic language or marketing claims
+**DO**:
+- Create complete educational document that systematically answers questions
+- Include specific details, quotes, examples, data points from research
+- Build understanding progressively from atomic to central question
+- Provide standalone educational value for readers learning the topic
+- Write for LLM context consumption and human reading
 - Use wikilinks `[[note]]` to reference existing notes
-- Code examples where appropriate
-- Concrete, actionable information
+- Include code examples where appropriate
+- Be technical and specific with concrete, actionable information
+
+**DO NOT**:
+- Simply analyze the question structure or list questions without substantial answers
+- Use vague generalities or hyperbolic language
+- Include marketing claims or unsupported assertions
 
 ## 7. Add Bidirectional Relationships
 

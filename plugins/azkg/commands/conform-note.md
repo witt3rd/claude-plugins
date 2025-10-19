@@ -46,21 +46,56 @@ Read("$REPO_PATH/agents.md")
 
 ## Task
 
-Transform the provided note to match this standard structure:
+**IMPORTANT**: Transform the provided note to follow the question-oriented content synthesis approach defined in `_shared_content_synthesis.md`.
+
+The target structure should be:
 
 ```markdown
 ---
 tags: [domain, technology, content-type]
 last_refresh: YYYY-MM-DD  # Optional, preserve if exists
+source: <original_url_or_path>  # Optional, preserve if exists
 ---
 
-# Note Title
+# Note Title (Based on Central Question)
 
-Brief summary paragraph (1-3 sentences describing what this note contains).
+## Central Question
 
-## Main Content Sections
+**Question**: [The single overarching question this note addresses]
 
-(Preserve existing section structure and content)
+**Executive Summary**: 2-3 paragraphs previewing key insights and how the content resolves the central question.
+
+## Part I: [Domain Question 1]
+
+### [Specific Question 1.1]
+
+**Question**: [Clear, specific question from this section]
+
+**Answer**: [Comprehensive response including:
+- Direct answer to the question
+- Supporting evidence from content (specific quotes, examples, data)
+- Technical details and concrete information
+- Implications and connections to broader themes]
+
+### [Specific Question 1.2]
+
+**Question**: [Next specific question]
+
+**Answer**: [Evidence-based response...]
+
+## Part II: [Domain Question 2]
+
+### [Specific Question 2.1]
+
+**Question**: [Clear question]
+
+**Answer**: [Comprehensive response with content evidence...]
+
+[Continue with additional parts and sections as needed]
+
+## Resolution: [Answer to Central Question]
+
+Synthesize domain insights to definitively resolve the central question posed at the beginning.
 
 ## Related Concepts
 
@@ -94,6 +129,10 @@ Brief summary paragraph (1-3 sentences describing what this note contains).
 
 - Read the specified note file
 - Identify existing sections and their purpose
+- Analyze the content to identify:
+  - The central question the note addresses
+  - Domain areas and their questions
+  - Specific questions within each section
 - Preserve all valuable content
 
 ### 2. Fix YAML Frontmatter
@@ -102,17 +141,25 @@ Brief summary paragraph (1-3 sentences describing what this note contains).
 - Preserve `last_refresh` if it exists
 - Ensure tags follow conventions: lowercase with hyphens
 
-### 3. Restructure Title and Summary
+### 3. Restructure Title and Central Question
 
-- Ensure single H1 title
-- If the opening paragraph is already a good summary, keep it
-- If opening is too long or mixed with introduction content, extract a 1-3 sentence summary
+- Ensure single H1 title (update to reflect central question if needed)
+- Add "## Central Question" section immediately after title
+- Identify and state the single overarching question the note addresses
+- Create executive summary (2-3 paragraphs) previewing key insights
 
-### 4. Organize Main Content
+### 4. Transform Main Content to Question-Answer Format
 
-- Preserve existing section structure
-- Keep all substantive content in appropriate sections
-- Maintain proper heading hierarchy
+**Apply question-oriented synthesis** (from `_shared_content_synthesis.md`):
+
+- Organize existing content into Part I, Part II, etc. (domain questions)
+- Within each part, create subsections with specific questions
+- For each subsection:
+  - **Question**: State the specific question clearly
+  - **Answer**: Provide comprehensive response with evidence from content
+- Preserve all substantive content, reorganized into Q&A format
+- Maintain technical details, examples, and concrete information
+- Add "## Resolution" section that synthesizes insights to answer central question
 
 ### 5. Fix References Section
 
@@ -135,12 +182,11 @@ The final order should be:
 
 1. YAML frontmatter
 2. Title (H1)
-3. Brief summary paragraph
-4. Main content sections (H2)
-
-5. ## Related Concepts (H2) - preserve existing relationships
-
-6. ## References (H2)
+3. ## Central Question (H2) with executive summary
+4. ## Part I, Part II, etc. (H2) - Domain questions with Q&A subsections
+5. ## Resolution (H2) - Answer to central question
+6. ## Related Concepts (H2) - preserve existing relationships
+7. ## References (H2)
 
 ## Execution
 
