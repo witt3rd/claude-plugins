@@ -16,9 +16,10 @@ Get transcript from a YouTube video using yt-dlp and create a comprehensive know
 - Command: `yt-dlp --skip-download --write-info-json <url>`
 
 **Get transcript using yt-dlp**:
-- Use `yt-dlp --write-auto-subs --skip-download --sub-format vtt --convert-subs srt <url>`
+- Use `yt-dlp --write-auto-subs --sub-langs "en-US,en.*" --skip-download --sub-format vtt --convert-subs srt -o "attachments/%(id)s" <url>`
+- This downloads English subtitles only, preferring en-US variant
 - Save transcript to `attachments/<video_id>.srt` or `attachments/<video_id>.en.srt`
-- If auto-generated subtitles unavailable, try manual subtitles
+- If auto-generated subtitles unavailable, try manual subtitles with same `--sub-langs` flag
 - If transcript unavailable, inform user and suggest alternatives
 
 **Read the transcript**:
@@ -137,11 +138,11 @@ Synthesize domain insights to definitively resolve the central question posed at
 # Get video metadata
 yt-dlp --skip-download --write-info-json <youtube_url>
 
-# Download auto-generated subtitles as SRT
-yt-dlp --write-auto-subs --skip-download --sub-format vtt --convert-subs srt -o "attachments/%(id)s" <youtube_url>
+# Download auto-generated subtitles as SRT (English only, prefer en-US)
+yt-dlp --write-auto-subs --sub-langs "en-US,en.*" --skip-download --sub-format vtt --convert-subs srt -o "attachments/%(id)s" <youtube_url>
 
-# Try manual subtitles if auto-subs unavailable
-yt-dlp --write-subs --skip-download --sub-format vtt --convert-subs srt -o "attachments/%(id)s" <youtube_url>
+# Try manual subtitles if auto-subs unavailable (English only, prefer en-US)
+yt-dlp --write-subs --sub-langs "en-US,en.*" --skip-download --sub-format vtt --convert-subs srt -o "attachments/%(id)s" <youtube_url>
 
 # List available subtitle languages
 yt-dlp --list-subs <youtube_url>
